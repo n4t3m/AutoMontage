@@ -5,9 +5,14 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip,
 from moviepy.audio.fx.volumex import volumex
 import secret as secret
 
+BACKGROUND_MUSIC_PATH = 'assets/darudesandstorm.mp3'
+SUBREDDIT = 'overwatch'
+OUTPUT_FILE = "montage.mp4"
+REDDIT_BASE = "https://www.reddit.com"
+
 def getSubmissions(reddit):
     arr = []
-    for submission in reddit.subreddit("overwatch").hot(limit=100):
+    for submission in reddit.subreddit(SUBREDDIT).hot(limit=100):
         arr.append(submission)
     return arr
 
@@ -23,7 +28,7 @@ def getHighlightSubmissions(submission_arr):
 def getHighlightURL(arr):
     ret_dict = {}
     for sub in arr:
-        ret_dict[sub.author.name]="https://www.reddit.com" + sub.permalink
+        ret_dict[sub.author.name]= REDDIT_BASE + sub.permalink
     return ret_dict
 
 def removeRawVideos():
@@ -61,7 +66,7 @@ def renderVideos(data):
 
     final_clip = concatenate_videoclips(cliparr, method='compose')
     final_clip = final_clip.fx(volumex, 0.3)
-    audio_background = AudioFileClip('assets/darudesandstorm.mp3').set_duration(final_clip.duration)
+    audio_background = AudioFileClip(BACKGROUND_MUSIC_PATH).set_duration(final_clip.duration)
     final_audio = CompositeAudioClip([final_clip.audio, audio_background])
     ret_clip = final_clip.set_audio(final_audio)
     return ret_clip
@@ -99,7 +104,7 @@ def main():
     clipVideo.write_videofile("clips.mp4")
     removeRawVideos()
     finalVideo = addIntroOutro('clips.mp4')
-    finalVideo.write_videofile("montage.mp4")
+    finalVideo.write_videofile(OUTPUT_FILE)
     
 
 if __name__ == "__main__":
