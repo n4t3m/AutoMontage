@@ -3,6 +3,7 @@ import os
 import glob
 from moviepy.editor import VideoFileClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip
 from moviepy.audio.fx.volumex import volumex
+from moviepy.editor import *
 import secret as secret
 
 BACKGROUND_MUSIC_PATH = 'assets/darudesandstorm.mp3'
@@ -61,8 +62,16 @@ def renderVideos(data):
     cliparr = []
 
     for entry in data:
+        #if data[entry] == "5.mp4":
+            #break
         c = VideoFileClip(f"raw_videos/{data[entry]}", target_resolution=(1080, 1920))
+        t = TextClip(entry, fontsize = 50, color = 'white')
+        #width, height
+        t = t.set_position((0.1,0.8), relative=True).set_duration(c.duration)
+        c = CompositeVideoClip([c, t])  
+
         cliparr.append(c)
+
 
     final_clip = concatenate_videoclips(cliparr, method='compose')
     final_clip = final_clip.fx(volumex, 0.3)
